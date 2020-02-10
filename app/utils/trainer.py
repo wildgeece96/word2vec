@@ -44,7 +44,7 @@ class Trainer(object):
         y = np.zeros([self.batch_size, logits.shape[-1]], dtype=np.float32)
         y[:, 0] =  1
         y = tf.convert_to_tensor(y, dtype='float32')
-        loss = self.bce(logits, y)
+        loss = self.bce(y, logits)
         return loss 
 
     def save_model(self, epoch):
