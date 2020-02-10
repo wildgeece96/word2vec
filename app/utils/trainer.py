@@ -16,10 +16,11 @@ class Trainer(object):
     
     def train(self, batch_size, epochs=10):
         self.batch_size = batch_size 
-        current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M")
-        self.writer = tf.summary.create_file_writer(f"./out/record/{current_time}")
+        self.time = datetime.datetime.now().strftime("%Y%m%d-%H%M")
+        self.writer = tf.summary.create_file_writer(f"./out/record/{self.time}")
         for epoch in range(epochs):
             self.train_epoch(epoch, epochs)
+            self.save_model(epoch)
     
     def train_epoch(self, epoch, epochs):
         with tqdm(self.loader.load(self.x_dist, self.batch_size)) as pbar:
@@ -46,5 +47,6 @@ class Trainer(object):
         loss = self.bce(logits, y)
         return loss 
 
-    def save_model(self, save_path):
+    def save_model(self, epoch):
+        save_path = f"./out/record/{time}/model_{epoch:03d}.h5"
         model.save(save_path) 

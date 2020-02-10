@@ -23,5 +23,5 @@ vocab_size = loader.vocab_size
 model = CBOW(hidden_dim, vocab_size, window_size, num_neg_samples=num_neg_samples)
 trainer = Trainer(model, loader, x_dist, optimizer)
 trainer.train(batch_size, epochs=epochs)
-trainer.save_model("./out/model.h5")
+trainer.save_model("final")
 print("Model has been saved.")
