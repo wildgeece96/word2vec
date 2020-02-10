@@ -29,7 +29,7 @@ class Trainer(object):
                 with self.writer.as_default(): 
                     tf.summary.scalar("loss", loss_value.numpy(), step=i)
                     self.writer.flush()
-                pbar.set_postfix({"loss" : loss_value.numpy()})
+                pbar.set_postfix({"loss" : loss_value.numpy(), "samples" : i*self.batch_size})
 
     def train_step(self, inputs, negative_samples):
         with tf.GradientTape() as tape:
