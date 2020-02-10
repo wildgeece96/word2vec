@@ -1,0 +1,6 @@
+numpy==1.18.1
+pandas
+joblib
+sentencepiece
+tensorflow-gpu==2.1.0
+tqdm
