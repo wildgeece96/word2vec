@@ -7,16 +7,17 @@ from utils.modeling import CBOW
 from utils.data_loader import DataLoader 
 
 window_size = 5
-num_neg_samples = 20
+num_neg_samples = 100
 hidden_dim = 100
-batch_size = 100
+batch_size = 3000
 epochs = 10
 corpus_path = "./data/corpus.txt"
 sp_path = "./tokenizer/aozora_8k_model.model"
 x_dist = np.load("./out/x_dist.npy")
 
-optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
-
+optimizer = tf.keras.optimizers.Adam(learning_rate=1e-6)
+# optimizer = tf.keras.optimizers.Adadelta(learning_rate=1e-2, rho=0.95)
+# optimizer = tf.keras.optimizers.SGD(learning_rate=1e-5)
 loader = DataLoader(window_size, num_neg_samples, corpus_path=corpus_path,
                 sp_path=sp_path)
 vocab_size = loader.vocab_size
