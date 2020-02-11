@@ -1,19 +1,21 @@
 import tensorflow as tf
-import tensorflow.keras as keras 
+import tensorflow.keras as keras
 from tensorflow.keras.layers import (
     Embedding,
     Dense,
-    LayerNormalization 
+    LayerNormalization
 )
+
 
 class ContextEmbeddingLayer(keras.layers.Layer):
 
-    def __init__(self, vocab_size, hidden_dim, input_length=10):
-        super(ContextEmbeddingLayer, self).__init__()
-        self.embedding = Embedding(vocab_size, hidden_dim, input_length=input_length)
+    def __init__(self, vocab_size, hidden_dim, input_length=10, **kwargs):
+        super(ContextEmbeddingLayer, self).__init__(**kwargs)
+        self.embedding = Embedding(vocab_size, hidden_dim, 
+                input_length=input_length, name="Embedding")
         self.bias = self.add_weight(shape=hidden_dim, dtype=tf.float32, 
-                            initializer='zero')
-        self.norm = LayerNormalization(axis=-2)
+                            initializer='zero', name="Embedding_bias")
+        self.norm = LayerNormalization(axis=-2, name='norm')
 
     def call(self, inputs):
         x = self.embedding(inputs)
@@ -21,12 +23,14 @@ class ContextEmbeddingLayer(keras.layers.Layer):
         x = self.norm(x)
         return x
 
+
 class NegativeSamplingLayer(keras.layers.Layer):
     
     def __init__(self, hidden_dim, vocab_size, num_sample=5): 
         super(NegativeSamplingLayer, self).__init__()
-        self.out_embedding = Embedding(vocab_size, hidden_dim, input_length=5)
-        self.num_sample = num_sample 
+        self.out_embedding = Embedding(vocab_size, hidden_dim, input_length=5,
+                        name="out_embedding")
+        self.num_sample = num_sample
 
     def call(self, inputs, idxs):
         '''
@@ -43,12 +47,13 @@ class NegativeSamplingLayer(keras.layers.Layer):
         x = tf.squeeze(x, axis=1)
         return x
 
-class CBOW(keras.layers.Layer):
+class CBOW(keras.Model):
 
     def __init__(self, hidden_dim=100, vocab_size=8000, window_size=5, num_neg_samples=10):
         super(CBOW, self).__init__()
-        self.embedding = ContextEmbeddingLayer(vocab_size, hidden_dim, window_size*2)
-        self.decode = Dense(vocab_size, input_shape=(hidden_dim,))
+        self.embedding = ContextEmbeddingLayer(vocab_size, hidden_dim, window_size*2, 
+                        name='context_Embedding_layer')
+        self.decode = Dense(vocab_size, input_shape=(hidden_dim,), name="decode")
     
     def call(self, inputs): 
         """
