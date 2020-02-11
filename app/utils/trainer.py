@@ -34,20 +34,20 @@ class Trainer(object):
 
     def train_step(self, inputs, ys):
         with tf.GradientTape() as tape:
-                loss_value = self.loss(inputs, ys)
+            loss_value, log_softmax = self.loss(inputs, ys)
         grads = tape.gradient(loss_value, self.model.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
-        return loss_value
+        return loss_value, log_softmax
         
     def loss(self, inputs, ys):
-        logits = self.model(inputs)
-        y = np.zeros([self.batch_size, logits.shape[-1]], dtype=np.float32)
+        log_softmax = self.model(inputs)
+        y = np.zeros([self.batch_size, log_softmax.shape[-1]], dtype=np.float32)
         for i, _idx in enumerate(ys): 
             y[i, _idx] =  1
         y = tf.convert_to_tensor(y, dtype='float32')
-        loss = tf.reduce_sum(- y * logits)/self.batch_size
-        return loss, logits 
+        loss = tf.reduce_sum(- y * log_softmax)/self.batch_size
+        return loss, log_softmax
 
     def save_model(self, epoch):
-        save_path = f"./out/record/{time}/model_{epoch:03d}.h5"
+        save_path = f"./out/record/{self.time}/model_{epoch:03d}.h5"
         model.save(save_path) 
