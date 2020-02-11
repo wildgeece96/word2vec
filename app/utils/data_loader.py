@@ -20,25 +20,24 @@ class DataLoader(object):
             lines = f.readlines()
         batch = []
         y = [] 
-        while True:
-            if shuffle:
-                random.shuffle(lines)  
-            for line in lines:   
-                ids = self.sp.EncodeAsIds(line) 
-                if len(ids) < self.window_size*2+1:
-                    continue
-                _batch, _y = self.make_batch(ids) 
-                batch += _batch
-                y += _y 
-                while len(batch) >= batch_size:
-                    negative_samples = np.random.choice(range(self.vocab_size),
-                                    size=(batch_size,self.neg_sample_num), 
-                                    p=x_dist)
-                    negative_samples[:, 0] = y[:batch_size]
-                    yield (tf.convert_to_tensor(batch[:batch_size], dtype=tf.int32),
-                                tf.convert_to_tensor(negative_samples, dtype=tf.int32))
-                    batch = batch[batch_size:] 
-                    y = y[batch_size:]
+        if shuffle:
+            random.shuffle(lines)  
+        for line in lines:   
+            ids = self.sp.EncodeAsIds(line) 
+            if len(ids) < self.window_size*2+1:
+                continue
+            _batch, _y = self.make_batch(ids) 
+            batch += _batch
+            y += _y 
+            while len(batch) >= batch_size:
+                # negative_samples = np.random.choice(range(self.vocab_size),
+                #                 size=(batch_size,self.neg_sample_num), 
+                #                 p=x_dist)
+                # negative_samples[:, 0] = y[:batch_size]
+                yield (tf.convert_to_tensor(batch[:batch_size], dtype=tf.int32),
+                            tf.convert_to_tensor(y[:batch_size], dtype=tf.int32))
+                batch = batch[batch_size:] 
+                y = y[batch_size:]
 
     def make_batch(self, ids):
         w_size = self.window_size 
