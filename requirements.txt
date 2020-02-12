@@ -4,3 +4,5 @@ joblib
 sentencepiece
 tensorflow==2.1.0
 tqdm
+tensorboard
+matplotlib
